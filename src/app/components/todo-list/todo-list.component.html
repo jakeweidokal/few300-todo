@@ -1,0 +1,32 @@
+<h3>Inbox (whatever they are filtering on)</h3>
+
+<div cdkDropList
+     class="example-list"
+     (cdkDropListDropped)="drop($event)">
+  <div class="example-box"
+       [attr.data.id]="item.id"
+       *ngFor="let item of items$ | async"
+       cdkDrag>
+    <div class="example-custom-placeholder"
+         *cdkDragPlaceholder></div>
+    <mat-icon>reorder</mat-icon>
+    <button mat-icon-button
+            color="primary"
+            aria-lable="Example icon button with a menu icon">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <span>{{  item.name }}</span>
+    <mat-divider></mat-divider>
+    <div *ngIf="item.project"> {{ item.project }}</div>
+    <div *ngIf="!item.project">No Project</div>
+    <mat-divider></mat-divider>
+    <span *ngIf="item.dueDate">{{ item.dueDate | date:'shortDate' }}</span>
+    <span *ngIf="!item.dueDate">No Due Date</span>
+    <mat-divider></mat-divider>
+    <input type="radio"
+           checked="item.completed">
+  </div>
+</div>
+<button mat-button
+        (click)="done()"
+        color="accent">Close</button>
