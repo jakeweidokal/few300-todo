@@ -1,11 +1,12 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { AppState, selectAllTodoList } from 'src/app/reducers';
+import { AppState, selectInboxTodoList } from 'src/app/reducers';
 import * as actions from '../../actions/todo.actions';
 import { TodoItem } from './../../models/todo-item';
+import { selectListForProject } from './../../reducers/index';
 
 @Component({
   selector: 'app-todo-list',
@@ -18,13 +19,28 @@ export class TodoListComponent implements OnInit {
 
   constructor(
     private dialogRef: MatDialogRef<TodoListComponent>,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    @Inject(MAT_DIALOG_DATA) private data: { filter: string }
   ) { }
 
   ngOnInit(): void {
-    this.items$ = this.store.pipe(
-      select(selectAllTodoList)
-    );
+    console.log(this.data);
+
+    switch (this.data.filter) {
+      case 'inbox': {
+        this.items$ = this.store.pipe(
+          select(selectInboxTodoList)
+        );
+        break;
+      }
+      default: {
+        this.items$ = this.store.pipe(
+          select(selectListForProject, { name: this.data.filter })
+        );
+      }
+    }
+
+
   }
 
   drop(evt: CdkDragDrop<any[]>): void {

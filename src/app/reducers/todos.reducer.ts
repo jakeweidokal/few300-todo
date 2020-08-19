@@ -11,27 +11,19 @@ export interface TodoEntity {
 }
 
 export interface TodoState extends EntityState<TodoEntity> {
-  sort: string[];
 }
 
 export const adapter = createEntityAdapter<TodoEntity>();
 
-// const initialState = adapter.getInitialState();
-const initialState: TodoState = {
-  ids: ['1', '2', '3'],
-  entities: {
-    1: { id: '1', name: 'Change light bulb', project: 'House', completed: false },
-    2: { id: '2', name: 'Clean garage', completed: true },
-    3: { id: '3', name: 'Take car to shop', completed: false, dueDate: '2020-08-20' }
-  },
-  sort: ['1', '2', '3']
-};
+const initialState = adapter.getInitialState();
 
 const reducerFunction = createReducer(
   initialState,
-  on(actions.todoItemSorted, (s, a) => {
-    const newSort = move(s.sort, a.previousIndex, a.currentIndex);
-    return { ...s, sort: newSort };
+  on(actions.todoAdded, (s, a) => adapter.addOne(a.payload, s)),
+  on(actions.loadTodosSucceeded, (s, a) => adapter.addMany(a.todos, s)),
+  on(actions.addTodoSucceeded, (s, a) => {
+    const tempState = adapter.removeOne(a.oldId, s);
+    return adapter.addOne(a.payload, tempState);
   })
 );
 
@@ -39,21 +31,5 @@ export function reducer(state: TodoState = initialState, action: Action): TodoSt
   return reducerFunction(state, action);
 }
 
-function move<T>(arr: T[], oldIndex: number, newIndex: number): T[] {
-  arr = [...arr];
-  while (oldIndex < 0) {
-    oldIndex += arr.length;
-  }
-  while (newIndex < 0) {
-    newIndex += arr.length;
-  }
-  if (newIndex >= arr.length) {
-    let k = newIndex - arr.length;
-    while ((k--) + 1) {
-      arr.push(undefined);
-    }
-  }
-  arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0]);
-  return arr;
-}
+
 

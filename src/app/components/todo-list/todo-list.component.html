@@ -17,14 +17,23 @@
     </button>
     <span>{{  item.name }}</span>
     <mat-divider></mat-divider>
+
     <div *ngIf="item.project"> {{ item.project }}</div>
     <div *ngIf="!item.project">No Project</div>
     <mat-divider></mat-divider>
+
     <span *ngIf="item.dueDate">{{ item.dueDate | date:'shortDate' }}</span>
     <span *ngIf="!item.dueDate">No Due Date</span>
     <mat-divider></mat-divider>
-    <input type="radio"
-           checked="item.completed">
+
+    <button mat-button
+            *ngIf="!item.completed">
+      <mat-icon>radio_button_unchecked</mat-icon>
+    </button>
+    <button mat-button
+            *ngIf="item.completed">
+      <mat-icon>radio_button_checked</mat-icon>
+    </button>
   </div>
 </div>
 <button mat-button
